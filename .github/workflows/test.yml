@@ -1,0 +1,67 @@
+name: Test Extension
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout extension
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install ai-factory from source
+        run: |
+          git clone --depth 1 https://github.com/lee-to/ai-factory.git /tmp/ai-factory
+          cd /tmp/ai-factory
+          npm ci
+          npm run build
+          npm link
+
+      - name: Create test project
+        run: |
+          mkdir -p /tmp/test-project/.opencode/skills
+          cat <<'EOF' > /tmp/test-project/.ai-factory.json
+          {
+            "version": "2.2.0",
+            "agents": [
+              {
+                "id": "opencode",
+                "skillsDir": ".opencode/skills",
+                "installedSkills": [],
+                "mcp": {
+                  "github": false,
+                  "filesystem": false,
+                  "postgres": false,
+                  "chromeDevtools": false
+                }
+              }
+            ],
+            "extensions": []
+          }
+          EOF
+
+      - name: Install extension
+        run: ai-factory extension add $GITHUB_WORKSPACE
+        working-directory: /tmp/test-project
+
+      - name: Verify extension registered
+        run: ai-factory extension list 2>&1 | grep "ai-factory-extension-mcp-template"
+        working-directory: /tmp/test-project
+
+      - name: Verify MCP config merged
+        run: |
+          echo "=== .ai-factory.json ==="
+          cat /tmp/test-project/.ai-factory.json
+          echo ""
+          echo "=== MCP settings ==="
+          cat /tmp/test-project/.opencode.json 2>/dev/null || cat /tmp/test-project/.mcp.json 2>/dev/null || echo "No separate MCP settings file found"

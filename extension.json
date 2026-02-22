@@ -1,0 +1,12 @@
+{
+  "name": "ai-factory-extension-mcp-template",
+  "version": "1.0.0",
+  "description": "Template: hello MCP server inside ai-factory extension",
+  "mcpServers": [
+    {
+      "key": "playwright",
+      "template": "./mcp/playwright.json",
+      "instruction": "Playwright MCP: Install Chrome to use a web browser"
+    }
+  ]
+}
