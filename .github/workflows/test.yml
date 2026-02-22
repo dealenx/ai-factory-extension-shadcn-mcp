@@ -55,7 +55,7 @@ jobs:
         working-directory: /tmp/test-project
 
       - name: Verify extension registered
-        run: ai-factory extension list 2>&1 | grep "ai-factory-extension-mcp-template"
+        run: ai-factory extension list 2>&1 | grep "ai-factory-extension-shadcn-mcp"
         working-directory: /tmp/test-project
 
       - name: Verify MCP config merged

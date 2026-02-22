@@ -1,31 +1,41 @@
-# ai-factory-extension-mcp-template
+# ai-factory-extension-shadcn-mcp
 
-A minimal template for packaging MCP servers as an [ai-factory](https://github.com/lee-to/ai-factory) extension. Use it to quickly distribute one or more MCP servers across all agents managed by ai-factory.
+An [ai-factory](https://github.com/lee-to/ai-factory) extension that bundles the **shadcn/ui MCP** server for AI coding agents — tools to install and manage [shadcn/ui](https://ui.shadcn.com/) components directly from the agent.
 
 ## Quick Start
 
-1. Click **"Use this template"** on GitHub to create your own repository from this template, then clone it. Alternatively, fork or clone this repository directly.
-2. Edit `extension.json` — set your extension `name`, `version`, `description`, and list every MCP server in the `mcpServers` array.
-3. For each server, create a JSON template in the `mcp/` directory.
-4. Install the extension into your project:
-
 ```bash
 # from a local directory
-ai-factory extension add ./ai-factory-extension-mcp-template
+ai-factory extension add ./ai-factory-extension-shadcn-mcp
 
 # or from a git repo
-ai-factory extension add https://github.com/<user>/<repo>.git
+ai-factory extension add https://github.com/dealenx/ai-factory-extension-shadcn-mcp.git
 ```
 
-That's it — ai-factory merges the MCP server configs into every agent that supports MCP (Claude Code, Cline, etc.).
+ai-factory merges the MCP server configs into every agent that supports MCP (Claude Code, Cline, etc.).
+
+## What Gets Installed
+
+After installation your agent's MCP configuration will include:
+
+```json
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    }
+  }
+}
+```
 
 ## Project Structure
 
 ```
-ai-factory-extension-mcp-template/
+ai-factory-extension-shadcn-mcp/
 ├── extension.json       # Extension manifest (required)
 ├── mcp/                 # MCP server templates
-│   └── playwright.json  # Example: Playwright MCP server
+│   └── shadcn.json      # shadcn/ui MCP server
 ├── package.json
 ├── LICENSE
 └── README.md
@@ -39,14 +49,14 @@ The manifest declares which MCP servers the extension provides:
 
 ```json
 {
-  "name": "ai-factory-extension-mcp-template",
+  "name": "ai-factory-extension-shadcn-mcp",
   "version": "1.0.0",
-  "description": "Template: hello MCP server inside ai-factory extension",
+  "description": "ai-factory extension: shadcn/ui MCP server",
   "mcpServers": [
     {
-      "key": "playwright",
-      "template": "./mcp/playwright.json",
-      "instruction": "Playwright MCP: Install Chrome to use a web browser"
+      "key": "shadcn",
+      "template": "./mcp/shadcn.json",
+      "instruction": "shadcn/ui MCP: provides tools to install and manage shadcn/ui components"
     }
   ]
 }
@@ -58,47 +68,16 @@ The manifest declares which MCP servers the extension provides:
 | `template` | Path to a JSON file with the server's command, args, and env. |
 | `instruction` | Message shown to the user after install (e.g. required env vars). |
 
-### MCP Template (`mcp/*.json`)
+### MCP Templates (`mcp/*.json`)
 
 Each template follows the standard MCP server format:
 
+**mcp/shadcn.json**
 ```json
 {
   "command": "npx",
-  "args": ["@playwright/mcp@latest"]
+  "args": ["shadcn@latest", "mcp"]
 }
-```
-
-You can also pass environment variables:
-
-```json
-{
-  "command": "npx",
-  "args": ["-y", "@my-org/my-mcp-server"],
-  "env": {
-    "MY_API_KEY": "${MY_API_KEY}"
-  }
-}
-```
-
-## Adding More MCP Servers
-
-1. Create a new template file in `mcp/`, e.g. `mcp/my-server.json`.
-2. Add a new entry to the `mcpServers` array in `extension.json`:
-
-```json
-{
-  "key": "my-server",
-  "template": "./mcp/my-server.json",
-  "instruction": "Set MY_API_KEY environment variable before use"
-}
-```
-
-3. Re-install the extension to apply:
-
-```bash
-ai-factory extension remove ai-factory-extension-mcp-template
-ai-factory extension add ./ai-factory-extension-mcp-template
 ```
 
 ## Managing the Extension
@@ -108,7 +87,7 @@ ai-factory extension add ./ai-factory-extension-mcp-template
 ai-factory extension list
 
 # Remove the extension (cleans up MCP entries from agent configs)
-ai-factory extension remove ai-factory-extension-mcp-template
+ai-factory extension remove ai-factory-extension-shadcn-mcp
 ```
 
 ## Documentation
